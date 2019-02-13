@@ -1,3 +1,4 @@
+import julia
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -5,7 +6,7 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 
 
-#external_stylesheets = ['./plotly.css']
+# external_stylesheets = ['./plotly.css']
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -21,7 +22,7 @@ app.layout = html.Div([
 
     # Ts
     html.Label('Tiempo de Muestreo'),
-    dcc.Input(id='Ts', value=1, type='number'),
+    dcc.Input(id='Ts', value=0.2, type='number'),
 
     # Conds
     html.Label('Condiciones de Diseño'),
@@ -38,6 +39,9 @@ app.layout = html.Div([
         value='1',
         multi=False
     ),
+    dcc.Input(id='cond1', type='number', value=0.5),
+    dcc.Input(id='cond2', type='number', value=4),
+
 
     # Kv Kp Ka
     html.Label('Error en estado estacionario'),
@@ -55,18 +59,20 @@ app.layout = html.Div([
         value='1',
         multi=False
     ),
+    dcc.Input(id='ess1', type='number', value=0),
+
 
     # controlador
     html.Label('Tipo de controlador'),
     dcc.Dropdown(
         id='CzType',
         options=[
-            {'label': 'PD', 'value': '1'},
-            {'label': 'PID', 'value': '2'},
-            {'label': 'PI', 'value': '3'},
-            {'label': 'Compensador', 'value': '4'},
+            {'label': 'PD', 'value': 'PD'},
+            {'label': 'PID', 'value': 'PID'},
+            {'label': 'PI', 'value': 'PI'},
+            {'label': 'Compensador', 'value': 'Comp'},
         ],
-        value='1',
+        value='PD',
         multi=False
     ),
 
@@ -80,16 +86,53 @@ app.layout = html.Div([
 
     html.Div(
         children=[
-        # C(z)
-        html.Div(id='Cz'),
+            # C(z)
+            html.Div(id='Cz'),
+        ])
 
+])
+
+
+############
+# Callbacks
+############
+j = julia.Julia()
+j.include("main.jl")
+
+
+@app.callback(
+    Output('Cz', 'children'),
+    [Input('calc', 'n_clicks')],
+    [
+        State('Gp', 'value'),
+        State('Ts', 'value'),
+        State('cond', 'value'),
+        State('cond1', 'value'),
+        State('cond2', 'value'),
+        State('ess', 'value'),
+        State('ess1', 'value'),
+        State('CzType', 'value'),
+    ]
+)
+def calculate_system(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype):
+
+    print(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype)
+    zeta = cond1
+    wn = cond2
+    Pd, data = j.main(Gp, float(zeta), float(wn), float(Ts), ctype)
+    # print(j.sum(3,4))
+    #Pd, data = j.main("", 0.5, 4,0.2,"PD")
+    #data = ([1,2,3],[2,3,4])
+    redata, imdata = data
+    # print(redata,imdata)
+    r = range(0, len(redata[0]))
+    return [
         # LGR
         dcc.Graph(
             id='LGR',
             figure=go.Figure(
-                data=[
-                    go.Scatter(x=x, y=y)
-                ],
+                data=list(map(lambda x: go.Scatter(
+                    x=redata[:, x], y=imdata[:, x]), r)),
 
                 layout=go.Layout(
                     title='Lugar Geométrico de las Raices',
@@ -124,27 +167,9 @@ app.layout = html.Div([
                 )
             ),
         )
-    ])
-
-])
-
-
-@app.callback(
-    Output('Cz', 'children'),
-    [Input('calc', 'n_clicks')],
-    [
-        State('Gp', 'value'),
-        State('Ts', 'value'),
-        State('cond', 'value'),
-        State('ess', 'value'),
-        State('CzType', 'value'),
     ]
-)
-def calculate_system(n_clicks, Gp, Ts, cond, ess, ctype):
-
-    
-    return Gp
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
+    #calculate_system(0, "", .2, "", 0.5, 4, 0, 0, "PD")
