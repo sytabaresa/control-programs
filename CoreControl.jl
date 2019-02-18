@@ -148,7 +148,7 @@ function rlocusData(P::LTISystem; K=Float64[])
     redata = real.(poles)
     imdata = imag.(poles)
 
-    redata, imdata
+    [redata, imdata], [real.(Z), imag.(Z)], [redata[1,:], imdata[1,:]]
 end
 
 using OrdinaryDiffEq

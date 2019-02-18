@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import Plot from 'react-plotly.js';
-import nj from 'numjs';
 import axios from 'axios';
 
 import './App.css';
 import './plotly.css';
-
-
-const style = 'https://codepen.io/chriddyp/pen/bWLwgP.css';
 
 
 //const server_url = 'http://control.tabares.me';
@@ -20,6 +16,8 @@ class App extends Component {
       rlocus: {
         redata: [],
         imdata: [],
+        poles: [],
+        zeros: [],
       },
       step: {
         ystep: [],
@@ -43,24 +41,31 @@ class App extends Component {
     axios.get(server_url + '/lgr', {
       params: params
     }).then((response) => {
-      console.log(response)
 
       let data = response.data.result
-      let redata = data["rlocus"][0]
-      let imdata = data["rlocus"][1]
-      redata = nj.array(redata)
-      imdata = nj.array(imdata)
+      console.log(data)
 
-      let { ystep, tstep, xstep } = data["step"]
+      let lgr = data["rlocus"][0]
+      let redata = lgr[0]
+      let imdata = lgr[1]
 
+      let zeros = data["rlocus"][1]
+      let poles = data["rlocus"][2]
+
+      let [ystep, tstep, xstep] = data["step"]
+
+
+      console.log(ystep[0])
       this.setState({
         rlocus: {
           redata: redata,
           imdata: imdata,
+          poles: poles,
+          zeros: zeros,
         },
         step: {
-          ystep: ystep,
           tstep: tstep,
+          ystep: ystep[0],
           xstep: xstep,
         }
       })
@@ -92,6 +97,14 @@ class App extends Component {
   }
 
   render() {
+
+    const sizePZ = 10
+    const sizeLGR = 1000
+    const sizeStep = 1000
+    const circleColor = "rgba(178, 216, 189, 0.1)"
+    const annotationColor = "rgba(178, 216, 189, 1)"
+    const lineColor = "rgba(178, 216, 189, 1)"
+
     return (
       <div className="App">
         <form className="input" onSubmit={this.onSubmitForm.bind(this)}>
@@ -142,15 +155,84 @@ class App extends Component {
             data={
               this.state.rlocus.redata.map((d, i) => (
                 {
-                  x: this.state.redata.slice(null, [i, i + 1]).tolist().flatMap(x => x),
-                  y: this.state.imdata.slice(null, [i, i + 1]).tolist().flatMap(x => x),
+                  x: this.state.rlocus.redata[i],
+                  y: this.state.rlocus.imdata[i],
                   type: 'scatter',
                   mode: 'lines',
+                  showlegend: false,
                 })
-              )
+              ).concat([
+                {
+                  x: this.state.rlocus.zeros[0],
+                  y: this.state.rlocus.zeros[1],
+                  type: 'scatter',
+                  mode: 'markers',
+                  name: "zeros",
+                  marker: {
+                    symbol: "circle-open",
+                    size: sizePZ,
+                  }
+                },
+                {
+                  x: this.state.rlocus.poles[0],
+                  y: this.state.rlocus.poles[1],
+                  type: 'scatter',
+                  mode: 'markers',
+                  name: "polos",
+                  marker: {
+                    symbol: "x-thin-open",
+                    size: sizePZ,
+                  }
+                }
+              ])
+
             }
             layout={{
               title: 'Lugar Geométrico de las Raices',
+              width: sizeLGR,
+              height: sizeLGR,
+              xaxis: {
+                title: 'real',
+              },
+              yaxis: {
+                title: 'imaginario',
+                scaleanchor: "x",
+                scaleratio: 1,
+              },
+              annotations: [
+                {
+                  x: 1 / Math.sqrt(2),
+                  y: 1 / Math.sqrt(2),
+                  xref: 'x',
+                  yref: 'y',
+                  text: 'estabilidad',
+                  showarrow: true,
+                  arrowhead: 0,
+                  ax: 40,
+                  ay: -40,
+                  font: {
+                    color: annotationColor,
+                    // size: 12
+                  },
+                  arrowcolor: annotationColor,
+                }
+              ],
+              shapes: [
+                {
+                  type: 'circle',
+                  xref: 'x',
+                  yref: 'y',
+                  x0: -1,
+                  y0: 1,
+                  x1: 1,
+                  y1: -1,
+                  fillcolor: circleColor,
+                  line: {
+                    color: lineColor,
+                    dash: 'dot',
+                  }
+                },
+              ]
             }}
           />
           <option value=""></option>
@@ -163,16 +245,32 @@ class App extends Component {
                 type: 'scatter',
                 mode: 'lines',
                 name: 'respuesta',
+                line: { shape: 'hv' },
               },
               // {
               //   x: this.state.step.tstep,
-              //   y: np.ones(len(tstep)),
+              //   y:  [1],
+              //   type: 'scatter',
+              //   mode: 'lines',
+              //   name: 'entrada',
+              // },
+              // {
+              //   x: this.state.step.tstep,
+              //   y: this.state.step.xstep[0],
+              //   type: 'scatter',
+              //   name: 'entrada'
+              // },
+              // {
+              //   x: this.state.step.tstep,
+              //   y: this.state.step.xstep[1],
               //   type: 'scatter',
               //   name: 'entrada'
               // },
             ]}
             layout={{
               title: 'Respuesta en el tiempo del sistema con controlador',
+              width: sizeStep,
+              height: sizeStep * .6,
               xaxis: {
                 title: 'tiempo (s)'
               },
