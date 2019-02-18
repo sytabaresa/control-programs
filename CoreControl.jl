@@ -14,7 +14,9 @@ end
 end
 
 
-#module CoreControl
+module CoreControl
+export logic
+
 
 function Pd(ζ,wn,T)
     wd = wn*sqrt(1-ζ^2)
@@ -37,16 +39,13 @@ import  ..ControlUtils
 using ControlSystems
 
 
-function main(GpText, zeta, wn, Ts, Ctype)
-   # Gp = run(GpText, TransferFunction{ControlSystems.SisoZpk{Int64,Int64}})
-    #Gp = GpText #TODO: parse
-    Gp = zpk([],[0,-2],1) #TODO: input
-    logic(Gp,zeta,wn,Ts,Ctype)
+function calcularTs(wn::Real)::Real
 end
 
-export main
-function logic(Gp,ζ,wn,Ts,Ctype)
-
+function logic(GpText::String, ζ::Float32, wn::Float32, Ts::Float32, ctype::String)
+    println(GpText, ζ, wn, Ts, ctype)
+    #Validar GpText
+    Gp = zpk([],[0,-2],1) #TODO: input
     #Ts = 1 #TODO: input o cálculo automatico segun 8 a 10 muestras
   
     Gz = c2d(Gp,Ts)
@@ -65,20 +64,34 @@ function logic(Gp,ζ,wn,Ts,Ctype)
         Set([((defθ > 0) ? ["PD"] : ["PI"]); a])
     end
     
-    if (!in(Ctype, contSet))
+    if (!in(ctype, contSet))
         println("no existe el controlador o no puede generar el ángulo solicitado")
         return
     end
 
-    aa, bb = angController(Ctype, z, defθ, Gz)
-    tpmCz = controllersTF(Ctype,1,aa,bb,Ts) 
+    aa, bb = angController(ctype, z, defθ, Gz)
+    tpmCz = controllersTF(ctype,1,aa,bb,Ts) 
     K = 1/abs(Gz(z)[1,1]*tpmCz(z)[1,1])
 
-    Cz = controllersTF(Ctype,K,aa,bb, Ts)
+    Cz = controllersTF(ctype,K,aa,bb, Ts)
 
     Gdz = Gz * Cz
-    z, Gdz, rlocusData(Gdz, K=range(1e-6,stop=200,length=1000))
-    #z, Gdz
+    Glc = Gdz/(1 + Gdz)
+
+    function trans(a)
+        tmp = a.matrix[1,1]
+        [tmp.num, tmp.den]
+    end
+
+    Dict(
+        "Pd" => z,
+        "Cz" => Cz,
+        "Gz" => Gz,
+        "Gdz" => Gdz,
+        "Glc" => tf(Glc),
+        "rlocus" => rlocusData(Gdz, K=range(1e-6,stop=200,length=1000)),
+        "step" => step(Glc),
+    )
 end
 #TODO: lista de funciones de trans para los controladores
 
@@ -162,6 +175,6 @@ function sum(a,b)
     a+b
 end
 
-#end
+end
 
 

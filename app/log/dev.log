@@ -1,0 +1,12 @@
+2019-02-13 19:09:19:INFO:Main:Done! New app created at /home/syta/Documents/control/programa/app/your_cool_new_app
+2019-02-13 19:09:19:DEBUG:Main:Changing active directory to your_cool_new_app
+2019-02-13 19:09:19:DEBUG:Main:Installing app dependencies
+2019-02-13 19:09:26:INFO:Main:Starting your brand new Genie app - hang tight!
+2019-02-13 19:11:17:DEBUG:Main:Web Server starting at 127.0.0.1:8000
+2019-02-13 19:11:17:DEBUG:Main:Web Server running at 127.0.0.1:8000
+2019-02-13 19:13:06:INFO:Main:Done! New app created at /home/syta/Documents/control/programa/app/back
+2019-02-13 19:13:06:DEBUG:Main:Changing active directory to back
+2019-02-13 19:13:06:DEBUG:Main:Installing app dependencies
+2019-02-13 19:13:12:INFO:Main:Starting your brand new Genie app - hang tight!
+2019-02-13 19:28:39:WARN:Main:Not in app, skipping autoload
+2019-02-13 19:28:39:DEBUG:Main:New controller created at app/resources/lgrs/LGRsController.jl

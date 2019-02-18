@@ -1,10 +1,11 @@
+import control
 import julia
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
-
+import numpy as np
 
 # external_stylesheets = ['./plotly.css']
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -72,7 +73,7 @@ app.layout = html.Div([
             {'label': 'PI', 'value': 'PI'},
             {'label': 'Compensador', 'value': 'Comp'},
         ],
-        value='PD',
+        value='Comp',
         multi=False
     ),
 
@@ -119,11 +120,14 @@ def calculate_system(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype):
     print(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype)
     zeta = cond1
     wn = cond2
-    Pd, data = j.main(Gp, float(zeta), float(wn), float(Ts), ctype)
+    data = j.main(Gp, float(zeta), float(wn), float(Ts), ctype)
     # print(j.sum(3,4))
     #Pd, data = j.main("", 0.5, 4,0.2,"PD")
     #data = ([1,2,3],[2,3,4])
-    redata, imdata = data
+    redata, imdata = data["rlocus"]
+    Glc = data["Glc"]
+    ystep, tstep, xstep = control.step_response(control.tf(Glc[0], Glc[1]))
+
     # print(redata,imdata)
     r = range(0, len(redata[0]))
     return [
@@ -131,13 +135,14 @@ def calculate_system(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype):
         dcc.Graph(
             id='LGR',
             figure=go.Figure(
-                data=list(map(lambda x: go.Scatter(
-                    x=redata[:, x], y=imdata[:, x]), r)),
-
+                data=list(map(
+                    lambda i: go.Scatter(
+                        x=redata[:, i],
+                        y=imdata[:, i]),
+                )),
                 layout=go.Layout(
                     title='Lugar Geométrico de las Raices',
                     showlegend=False,
-
                 )
             ),
         ),
@@ -148,13 +153,13 @@ def calculate_system(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype):
             figure=go.Figure(
                 data=[
                     go.Scatter(
-                        x=x,
-                        y=y,
+                        x=tstep,
+                        y=ystep,
                         name="entrada",
                     ),
                     go.Scatter(
-                        x=x,
-                        y=y*2,
+                        x=tstep,
+                        y=np.ones(len(tstep)),
                         name="respuesta",
                     ),
                 ],
@@ -171,5 +176,5 @@ def calculate_system(n_clicks, Gp, Ts, cond, cond1, cond2, ess, ess1, ctype):
 
 
 if __name__ == '__main__':
-    app.run_server()
-    #calculate_system(0, "", .2, "", 0.5, 4, 0, 0, "PD")
+    # app.run_server()
+    calculate_system(0, "", .2, "", 0.5, 4, 0, 0, "Comp")
