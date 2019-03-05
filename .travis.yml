@@ -10,7 +10,7 @@ before_script:
   - cd app
   - npm install
 script:
-  - npm run build
+  - npm run build --max_old_space_size=2000000
 deploy:
   provider: pages
   skip_cleanup: true
