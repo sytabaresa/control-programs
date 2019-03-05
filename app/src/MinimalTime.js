@@ -5,11 +5,42 @@ import Plot from 'react-plotly.js';
 class MinimalTime extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+          Gp: "",
+          Ts: 0,
+          step: {
+            tstep: [],
+            ystep: [],
+          }
+        }
+    }
+
+    onChangeForm(e) {
+      this.setState({
+        [e.target.name]: e.target.value
+      })
+    }
+  
+  
+    onSubmitForm(e) {
+      e.preventDefault();
+      let data = {
+        Gp: this.state.Gp,
+        Ts: this.state.Ts,
+        cond: this.state.cond,
+        cond1: this.state.cond1,
+        cond2: this.state.cond2,
+        ess: this.state.ess,
+        ess1: this.state.ess1,
+        ctype: this.state.ctype,
+      }
+  
+      this.calculate_system(data)
     }
 
     render() {
 
-        const sizePZ = 10
         const sizeLGR = 1000
         const sizeStep = 1000
         const circleColor = "rgba(178, 216, 189, 0.1)"
@@ -28,60 +59,6 @@ class MinimalTime extends Component {
               <button id="calc" type='submit' >Calcular</button>
             </form>
             <div className="graphs">
-              <Plot
-                id='LGR'
-                data={1
-    
-                }
-                layout={{
-                  title: 'Lugar Geométrico de las Raices',
-                  width: sizeLGR,
-                  height: sizeLGR,
-                  xaxis: {
-                    title: 'real',
-                  },
-                  yaxis: {
-                    title: 'imaginario',
-                    scaleanchor: "x",
-                    scaleratio: 1,
-                  },
-                  annotations: [
-                    {
-                      x: 1 / Math.sqrt(2),
-                      y: 1 / Math.sqrt(2),
-                      xref: 'x',
-                      yref: 'y',
-                      text: 'estabilidad',
-                      showarrow: true,
-                      arrowhead: 0,
-                      ax: 40,
-                      ay: -40,
-                      font: {
-                        color: annotationColor,
-                        // size: 12
-                      },
-                      arrowcolor: annotationColor,
-                    }
-                  ],
-                  shapes: [
-                    {
-                      type: 'circle',
-                      xref: 'x',
-                      yref: 'y',
-                      x0: -1,
-                      y0: 1,
-                      x1: 1,
-                      y1: -1,
-                      fillcolor: circleColor,
-                      line: {
-                        color: lineColor,
-                        dash: 'dot',
-                      }
-                    },
-                  ]
-                }}
-              />
-              <option value=""></option>
               <Plot
                 id='respuesta'
                 data={[
@@ -130,3 +107,5 @@ class MinimalTime extends Component {
         )
     }
 }
+
+export default MinimalTime;

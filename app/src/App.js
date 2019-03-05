@@ -31,7 +31,7 @@ class App extends Component {
           <MinimalTime server_url={server_url}/>
         </TabPanel>
         <TabPanel>
-
+          Construyendo
         </TabPanel>
       </Tabs>
     )

@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import Plot from 'react-plotly.js';
 import axios from 'axios';
 
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import "react-tabs/style/react-tabs.css";
-
 import './App.css';
 import './plotly.css';
 
