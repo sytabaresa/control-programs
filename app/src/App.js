@@ -22,7 +22,6 @@ class App extends Component {
           <Tab>Diseño por LGR</Tab>
           <Tab>Tiempo Mínimo</Tab>
           <Tab>Diseño por frecuencia</Tab>
-
         </TabList>
 
         <TabPanel>
