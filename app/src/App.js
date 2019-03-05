@@ -4,6 +4,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import "react-tabs/style/react-tabs.css";
 
 import LGR from './LGR';
+import MinimalTime from './MinimalTime';
 
 //const server_url = 'http://control.tabares.me';
 const server_url = 'http://localhost:8000';
@@ -18,15 +19,20 @@ class App extends Component {
     return (
       <Tabs>
         <TabList>
-          <Tab>LGR</Tab>
+          <Tab>Diseño por LGR</Tab>
           <Tab>Tiempo Mínimo</Tab>
+          <Tab>Diseño por frecuencia</Tab>
+
         </TabList>
 
         <TabPanel>
           <LGR server_url={server_url}></LGR>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 2</h2>
+          <MinimalTime server_url={server_url}/>
+        </TabPanel>
+        <TabPanel>
+
         </TabPanel>
       </Tabs>
     )
