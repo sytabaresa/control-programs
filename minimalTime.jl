@@ -6,9 +6,14 @@ export sum
 
 export GpRef
 export tiempoMinimoLogic
+
 const GpRef = zpk([-.5], [1.618, -0.618], 1, 1)
-function tiempoMinimo(GzText::String, T::Float32, rtype::String)
-    
+function tiempoMinimo(GzText::String, Ts::Real, rtype::String)
+
+    @eval z = $Ts != 0 ? tf("z", $Ts) : NaN
+    Gz = parseTransferFunction(GzText)
+
+    tiempoMinimoLogic(Gz, )
 end
 
 function tiempoMinimoLogic(Gpz::TransferFunction, R::TransferFunction)

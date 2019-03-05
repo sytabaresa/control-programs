@@ -1,4 +1,9 @@
+#include("utils.jl")
+using Base.Math
+import  ..ControlUtils
+using ControlSystems
 export lgr
+
 
 @enum Ctype begin
     PID = 1
@@ -14,9 +19,11 @@ const CtypeText = Dict(
     "Comp" => Comp,
 )
 
-function lgr(GpText::String, ζ::Float32, wn::Float32, Ts::Float32, ctypeText::String) 
-    println(GpText, ζ, wn, Ts, ctype)
-    Gp = zpk([],[0,-2],1) #TODO: input
+
+function lgr(GpText::String, ζ::Real, wn::Real, Ts::Real, ctypeText::String) 
+    println(GpText, ζ, wn, Ts, ctypeText)
+    #Gp = zpk([],[0,-2],1) #TODO: input
+    Gp = parseTransferFunctionS(GpText)
 
     #TODO: Validar GpText
  #   "1/(s*(s+2))"
@@ -43,16 +50,10 @@ function zeta(Mp)
     sqrt( log(Mp)^2/(pi^2 + log(Mp)^2) )
 end
 
-#include("utils.jl")
-using Base.Math
-import  ..ControlUtils
-using ControlSystems
-
-
 function calcularTs(wn::Real)::Real
 end
 
-function lgrLogic(Gp::TransferFunction, ζ::Float32, wn::Float32, Ts::Float32, ctype::Ctype)
+function lgrLogic(Gp::TransferFunction, ζ::Real, wn::Real, Ts::Real, ctype::Ctype)
 
     Gz = c2d(Gp,Ts)
     #println(Gz)

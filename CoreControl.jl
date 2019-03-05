@@ -1,3 +1,4 @@
+using ControlSystems
 
 module CoreControl
 
@@ -5,8 +6,18 @@ include("./lgr.jl")
 include("./minimalTime.jl")
 include("./freq.jl")
 
+s = tf("s")
+z = tf("z",1)
+
+export parseTransferFunction
+# TODO: sanitize inputs!
+
+function parseTransferFunction(sys::String)
+    expr = Meta.parse(sys)
+    @eval $expr
 end
 
+end
 
 module ControlUtils
 
