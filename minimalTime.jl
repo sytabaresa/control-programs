@@ -9,7 +9,6 @@ export tiempoMinimoLogic
 const GpRef = zpk([-.5], [1.618, -0.618], 1, 1)
 function tiempoMinimo(GzText::String, T::Float32, rtype::String)
     
-
 end
 
 function tiempoMinimoLogic(Gpz::TransferFunction, R::TransferFunction)

@@ -2,7 +2,9 @@
 module CoreControl
 
 include("./lgr.jl")
-include("./tiempoMinimo.jl")
+include("./minimalTime.jl")
+include("./freq.jl")
+
 end
 
 
