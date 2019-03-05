@@ -64,7 +64,7 @@ function main(data::Dict)
    # Gp = run(GpText, TransferFunction{ControlSystems.SisoZpk{Int64,Int64}})
     #Gp = GpText #TODO: parse
     println(Gp, zeta, wn, Ts, ctype)
-    CoreControl.logic(Gp, zeta, wn, Ts, ctype)
+    CoreControl.lgr(Gp, zeta, wn, Ts, ctype)
 end
 
 ### Create and run the server
