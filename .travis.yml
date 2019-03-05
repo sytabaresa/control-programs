@@ -5,7 +5,7 @@ dist: trusty
 sudo: required
 env:
   global:
-    - NODE_OPTIONS=--max_old_space_size=4096s
+    - NODE_OPTIONS=--max_old_space_size=4096
 branches:
   only:
   - master
