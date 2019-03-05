@@ -41,11 +41,7 @@ class MinimalTime extends Component {
 
     render() {
 
-        const sizeLGR = 1000
         const sizeStep = 1000
-        const circleColor = "rgba(178, 216, 189, 0.1)"
-        const annotationColor = "rgba(178, 216, 189, 1)"
-        const lineColor = "rgba(178, 216, 189, 1)"
 
         return (
             <div className="App">

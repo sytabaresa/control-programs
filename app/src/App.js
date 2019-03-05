@@ -10,9 +10,6 @@ import MinimalTime from './MinimalTime';
 const server_url = 'http://localhost:8000';
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-  }
 
   render() {
 
