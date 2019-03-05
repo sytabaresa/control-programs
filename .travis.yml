@@ -16,6 +16,7 @@ script:
   - npm run build
 deploy:
   provider: pages
+  fqdn: control.tabares.me
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   local_dir: app/build
